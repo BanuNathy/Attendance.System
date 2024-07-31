@@ -16,7 +16,7 @@ const Login = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e) => {     //Service function that handles the login process
     e.preventDefault();
     const errors = validate(formValues);
     setFormErrors(errors);
@@ -24,7 +24,7 @@ const Login = () => {
 
     if (Object.keys(errors).length === 0) {
       try {
-        const response = await fetch('http://localhost:4007/login', {
+        const response = await fetch('http://localhost:4007/login', {   // REST API call to the server
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
