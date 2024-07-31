@@ -1,28 +1,58 @@
-import React from 'react';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './login.css';
-import loginImage from './images/login.png'; 
+import loginImage from './images/login.png';
 
 const Login = () => {
   const initialValues = { username: "", email: "", password: "" };
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [isLogin, setIsLogin] = useState(false);
+  const [serverResponse, setServerResponse] = useState(null);
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
-  const handleLogin = (e) => {
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setFormErrors(validate(formValues));
+    const errors = validate(formValues);
+    setFormErrors(errors);
     setIsLogin(true);
+
+    if (Object.keys(errors).length === 0) {
+      try {
+        const response = await fetch('http://localhost:4007/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formValues),
+        });
+        const data = await response.json();
+        setServerResponse(data);
+        if (response.ok) {
+          console.log('Login successful:', data);
+          navigate('/home'); 
+        } else {
+          console.error('Login failed:', data);
+        }
+      } catch (error) {
+        console.error('Error during login:', error);
+        setServerResponse({ error: 'An error occurred. Please try again later.' });
+      }
+    }
   };
+
   useEffect(() => {
     console.log(formErrors);
     if (Object.keys(formErrors).length === 0 && isLogin) {
       console.log(formValues);
     }
   }, [formErrors]);
+
   const validate = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -34,6 +64,7 @@ const Login = () => {
     } else if (!regex.test(values.email)) {
       errors.email = "This is not a valid email format!";
     }
+
     if (!values.password) {
       errors.password = "Password is required!";
     } else if (values.password.length < 4) {
@@ -41,16 +72,19 @@ const Login = () => {
     } else if (values.password.length > 10) {
       errors.password = "Password cannot exceed more than 10 characters!";
     }
+
     return errors;
   };
+
   return (
     <div className='login'>
       <div className='login-bg'></div>
       <div className='container'>
-        {Object.keys(formErrors).length === 0 && isLogin ? (
-          <div className='success-message'>Login successfully</div>
-        ) : (
-          <pre></pre>
+        {serverResponse && serverResponse.message && (
+          <div className='success-message'>{serverResponse.message}</div>
+        )}
+        {serverResponse && serverResponse.error && (
+          <div className='error-message'>{serverResponse.error}</div>
         )}
         <form onSubmit={handleLogin}>
           <h1>Login</h1>
@@ -89,6 +123,7 @@ const Login = () => {
               />
             </div>
             <p>{formErrors.password}</p>
+
             <div className='additional-opt'>
               <input
                 type='checkbox'
@@ -109,7 +144,9 @@ const Login = () => {
     </div>
   );
 }
+
 export default Login;
+
 
 
 
