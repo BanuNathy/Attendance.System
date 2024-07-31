@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';  // To navigate login
 import homeImage from './images/home.png';
 import classesImage from './images/classes.png';
 import teachersImage from './images/teachers.png';
@@ -10,12 +10,13 @@ import { FaBell, FaSignOutAlt, FaHome, FaTachometerAlt, FaChalkboardTeacher, FaU
 
 const Home = () => {
   const [selectedMenu, setSelectedMenu] = useState('Home');
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();     //// To navigate login
 
   const handleMenuClick = (menu) => {
     setSelectedMenu(menu);
   };
 
+// Redirecting to homepage on logout
   const handleLogout = () => {
     navigate('/'); 
   };
