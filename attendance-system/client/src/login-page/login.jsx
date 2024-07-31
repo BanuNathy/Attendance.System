@@ -16,7 +16,7 @@ const Login = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handleLogin = async (e) => {     //Service function that handles the login process
+  const handleLogin = async (e) => {       //Service function that handles the login process
     e.preventDefault();
     const errors = validate(formValues);
     setFormErrors(errors);
@@ -24,7 +24,7 @@ const Login = () => {
 
     if (Object.keys(errors).length === 0) {
       try {
-        const response = await fetch('http://localhost:4007/login', {   // REST API call to the server
+        const response = await fetch('http://localhost:5010/login', {   // REST API call to the server
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -33,8 +33,11 @@ const Login = () => {
         });
         const data = await response.json();
         setServerResponse(data);
+
         if (response.ok) {
           console.log('Login successful:', data);
+          // Store token in localStorage or sessionStorage
+          localStorage.setItem('token', data.token);
           navigate('/home'); 
         } else {
           console.error('Login failed:', data);
@@ -53,30 +56,26 @@ const Login = () => {
     }
   }, [formErrors]);
 
-
-// Validation part of username email and password
-
-const validate = (values) => {
+  // Validation part of username email and password
+  const validate = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
     if (!values.username) {
-      errors.username = "Username is required!";  //Error if username is Empty
+      errors.username = "Username is required!";  // Error if username is empty
     }
     if (!values.email) {
-      errors.email = "Email is required!";    //Error if Email is Empty
+      errors.email = "Email is required!";    // Error if email is empty
     } else if (!regex.test(values.email)) {
-      errors.email = "This is not a valid email format!"; //Error if email format is invalid
+      errors.email = "This is not a valid email format!"; // Error if email format is invalid
     }
 
     if (!values.password) {
-      errors.password = "Password is required!";   //Error if password is Empty
+      errors.password = "Password is required!";   // Error if password is empty
     } else if (values.password.length < 4) {
       errors.password = "Password must be more than 4 characters!";  // Error if password is less than 4 characters
     } else if (values.password.length > 10) {
       errors.password = "Password cannot exceed more than 10 characters!"; // Error if password is more than 10 characters
     }
-
-
 
     return errors;
   };
@@ -148,10 +147,6 @@ const validate = (values) => {
       </div>
     </div>
   );
-}
+};
 
 export default Login;
-
-
-
-
