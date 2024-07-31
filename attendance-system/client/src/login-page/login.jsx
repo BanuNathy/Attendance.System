@@ -53,25 +53,30 @@ const Login = () => {
     }
   }, [formErrors]);
 
-  const validate = (values) => {
+
+// Validation part of username email and password
+
+const validate = (values) => {
     const errors = {};
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
     if (!values.username) {
-      errors.username = "Username is required!";
+      errors.username = "Username is required!";  //Error if username is Empty
     }
     if (!values.email) {
-      errors.email = "Email is required!";
+      errors.email = "Email is required!";    //Error if Email is Empty
     } else if (!regex.test(values.email)) {
-      errors.email = "This is not a valid email format!";
+      errors.email = "This is not a valid email format!"; //Error if email format is invalid
     }
 
     if (!values.password) {
-      errors.password = "Password is required!";
+      errors.password = "Password is required!";   //Error if password is Empty
     } else if (values.password.length < 4) {
-      errors.password = "Password must be more than 4 characters!";
+      errors.password = "Password must be more than 4 characters!";  // Error if password is less than 4 characters
     } else if (values.password.length > 10) {
-      errors.password = "Password cannot exceed more than 10 characters!";
+      errors.password = "Password cannot exceed more than 10 characters!"; // Error if password is more than 10 characters
     }
+
+
 
     return errors;
   };
